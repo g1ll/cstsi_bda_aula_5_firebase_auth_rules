@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import { initializeApp } from "firebase/app";
-import {getDatabase, set, ref,push, get} from "firebase/database"
+import {getDatabase, set, ref,push, get, query, orderByValue, limitToLast, orderByChild, onChildAdded, onValue, off} from "firebase/database"
 import {
     createUserWithEmailAndPassword,
     getAuth,
@@ -71,18 +71,27 @@ const loggedUser = await loginUser(user.email, user.password);
 
 // await signOut(auth)
 
-const produto = {
-    descricao: "TV SMART 75\" SAMSUMG 8K",
-    id_prod: 130,
-    importado: 0,
-    nome: "TV SMART SAMSUMG 75\"",
-    preco: 15990,
-    qtd_estoque: 100,
-    uid: loggedUser.uid
-}
+const consulta = query(ref(db,'produtos/'),orderByChild('id_prod'), limitToLast(1))
 
-await insertProduto(produto);
+onChildAdded(consulta,async (snap)=>{
+    if(snap.exists()){
+        const lastProduto = {...snap.val()}
+        const newProduto = {
+            descricao: "TV SMART 75\" SAMSUMG 8K",
+            id_prod: lastProduto.id_prod+1,
+            importado: 0,
+            nome: "TV SMART SAMSUMG 75\"",
+            preco: 15990,
+            qtd_estoque: 100,
+            uid: loggedUser.uid
+        }
+        off(consulta,'child_added')
+        await insertProduto(newProduto);
+        console.log({lastProduto,newProduto})
+        process.exit(0)
+    }
+})
 
 // console.log(await get(ref(db,'users/')))
 
-process.exit(0)
+
