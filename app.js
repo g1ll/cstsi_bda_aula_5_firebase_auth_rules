@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import { initializeApp } from "firebase/app";
-import {getDatabase, set, ref,push, get} from "firebase/database"
+import { getDatabase, set, ref, push, get } from "firebase/database"
 import {
     createUserWithEmailAndPassword,
     getAuth,
@@ -24,16 +24,39 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth();
 
-const createUser = async () => {
+
+
+//CRIAÇÃO DO USUÁRIO
+// const credentials = await createUserWithEmailAndPassword(auth, user.email, user.password);
+// console.log(credentials.user.uid)
+
+//LOGIN E LOGOUT DO USUÁRIO
+// try {
+//     console.log({ "token": auth.currentUser?.accessToken })
+//     const credentials = await signInWithEmailAndPassword(auth, user.email, user.password)
+//     console.log({ "token": auth.currentUser?.accessToken })
+//     console.log({ "uid": auth.currentUser.uid })
+//     await signOut(auth) //desconecta o user
+//     console.info('deconectado')
+//     console.log({ "token": auth.currentUser?.accessToken })
+// } catch (error) {
+//     const errorCode = error.code;
+//     const errorMessage = error.message;
+//     console.log({errorCode, errorMessage})
+//     process.exit(0)
+// }
+
+const createUser = async (email, password) => {
     try {
         const credentials = await createUserWithEmailAndPassword(auth, email, password);
-        console.log(credentials.user.uid)
+        console.log({"Created User ":{"uid":credentials.user.uid, "email":email}})
         const newUser = await set(ref(db, 'users/' + credentials.user.uid), {
             "email": email,
         })
-        if (newUser) console.log({ "User": newUser });
+        process.exit(0)
     } catch (error) {
-        console.log('error:' + error.code)
+        console.log({'errorCode': error.code,"Message":error.Message})
+        process.exit(0)
     }
 }
 
@@ -57,32 +80,24 @@ const insertProduto = async (newProduto) => {
     }
 }
 
+//Create new user
+// await createUser(user.email, user.password)
+
 //User data
 const user = {
-    email: 'gillgonzales@ifsul.edu.br',
-    // email: 'gillvelleda@gmail.com',
-    password: 'qwerty'
+    email: 'user_of_rtdb@rules.test',
+    password: 'user@rules'
 }
-
-//Create new user
-// await createUser(email, password)
-
 const loggedUser = await loginUser(user.email, user.password);
-
-// await signOut(auth)
-
-const produto = {
-    descricao: "TV SMART 75\" SAMSUMG 8K",
-    id_prod: 130,
+await insertProduto({
+    descricao: "TV SMART 80\" SAMSUMG 16K",
+    id_prod: 333,
     importado: 0,
-    nome: "TV SMART SAMSUMG 75\"",
-    preco: 15990,
+    nome: "TV SMART SAMSUMG 80\"",
+    preco: 19990,
     qtd_estoque: 100,
     uid: loggedUser.uid
-}
-
-await insertProduto(produto);
-
-// console.log(await get(ref(db,'users/')))
-
+});
 process.exit(0)
+
+// // console.log(await get(ref(db,'users/')))
