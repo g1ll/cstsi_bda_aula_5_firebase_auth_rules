@@ -30,10 +30,11 @@ const auth = getAuth();
 // const credentials = await createUserWithEmailAndPassword(auth, user.email, user.password);
 // console.log(credentials.user.uid)
 
+
 //LOGIN E LOGOUT DO USUÁRIO
 // try {
 //     console.log({ "token": auth.currentUser?.accessToken })
-//     const credentials = await signInWithEmailAndPassword(auth, user.email, user.password)
+//     await signInWithEmailAndPassword(auth, user.email, user.password)
 //     console.log({ "token": auth.currentUser?.accessToken })
 //     console.log({ "uid": auth.currentUser.uid })
 //     await signOut(auth) //desconecta o user
@@ -80,24 +81,27 @@ const insertProduto = async (newProduto) => {
     }
 }
 
-//Create new user
-// await createUser(user.email, user.password)
-
 //User data
 const user = {
-    email: 'user_of_rtdb@rules.test',
-    password: 'user@rules'
+    email: 'gillgonzales@ifsul.edu.br',
+    password: 'qwerty'
 }
+
+// //Create new user
+// await createUser(user.email, user.password)
+
+
 const loggedUser = await loginUser(user.email, user.password);
-await insertProduto({
-    descricao: "TV SMART 80\" SAMSUMG 16K",
+const novoProduto = {
+    descricao: "TV SMART 80\" LG 16K",
     id_prod: 333,
     importado: 0,
-    nome: "TV SMART SAMSUMG 80\"",
+    nome: "TV SMART LG 80\"",
     preco: 19990,
     qtd_estoque: 100,
     uid: loggedUser.uid
-});
+};
+await insertProduto(novoProduto);
 process.exit(0)
 
 // // console.log(await get(ref(db,'users/')))
